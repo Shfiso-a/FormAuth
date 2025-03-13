@@ -1,0 +1,7 @@
+name: FormAuth
+main: org.formauth.FormAuth
+version: "1.0.0"
+api: ["1.0.0"]
+description: authui
+author: Shfiso-a
+load: STARTUP 
