@@ -4,7 +4,7 @@ A simple authentication plugin for Nukkit Minecraft servers that uses forms for 
 
 ## Configuration
 
-The plugin creates a configuration file where you can adjust settings like:
+config file contains :
 - Login timeout
 - AFK timeout
 - Custom messages
