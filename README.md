@@ -11,4 +11,4 @@ The plugin creates a configuration file where you can adjust settings like:
 - Player database location
 
 ## Credits
-Kibiauth[](https://github.com/KibiDB/KibiAuth-Nukkit)
+Kibiauth[https://github.com/KibiDB/KibiAuth-Nukkit](https://github.com/KibiDB/KibiAuth-Nukkit)
