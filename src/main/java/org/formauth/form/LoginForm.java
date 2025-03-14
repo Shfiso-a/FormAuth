@@ -42,7 +42,6 @@ public class LoginForm {
     public static void processResponse(Player player, PlayerFormRespondedEvent event) {
         FormWindow window = event.getWindow();
         
-        // Handle custom form with password input
         if (window instanceof FormWindowCustom) {
             FormWindowCustom form = (FormWindowCustom) window;
             
