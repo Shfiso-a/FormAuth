@@ -8,6 +8,7 @@ import cn.nukkit.event.player.PlayerMoveEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
+import cn.nukkit.event.player.PlayerCommandPreprocessEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.form.window.FormWindowCustom;
@@ -106,6 +107,26 @@ public class EventListener implements Listener {
             event.setCancelled(true);
         }
     }
+    
+    /**
+     * blocking commands for any player that didn't login or register
+     */
+    @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        
+        if (!PlayerAuthAttributes.isAuthenticated(player)) {
+            event.setCancelled(true);
+            
+            PlayerData playerData = FormAuth.getSessionStorage().getPlayerData(player);
+            if (playerData.getStatus() == PlayerData.STATUS_NOT_REGISTERED) {
+                RegisterForm.showRegisterForm(player);
+            } else if (playerData.getStatus() == PlayerData.STATUS_REGISTERED) {
+                LoginForm.showLoginForm(player);
+            }
+        }
+    }
+
     
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
