@@ -46,11 +46,12 @@ public class SessionStorage {
         String playerName = player.getName().toLowerCase();
         
         PlayerData playerData = getPlayerData(player);
-        playerData.setPassword(password);
+        String encryptedPassword = PasswordUtils.encryptPassword(password);
+        playerData.setPassword(encryptedPassword);
         playerData.setStatus(PlayerData.STATUS_AUTHENTICATED);
         
         Config playerDB = new Config(FormAuth.getAuthConfig().getString("database.path"), Config.YAML);
-        playerDB.set(playerName + ".password", password);
+        playerDB.set(playerName + ".password", encryptedPassword);
         playerDB.save();
     }
     
