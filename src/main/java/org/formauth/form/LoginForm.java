@@ -12,6 +12,7 @@ import cn.nukkit.utils.TextFormat;
 import org.formauth.FormAuth;
 import org.formauth.player.PlayerAuthAttributes;
 import org.formauth.player.PlayerData;
+import org.formauth.player.PasswordUtils;
 
 public class LoginForm {
     
@@ -73,7 +74,7 @@ public class LoginForm {
                     return;
                 }
                 
-                if (password.equals(playerData.getPassword())) {
+                if (PasswordUtils.verifyPassword(password, playerData.getPassword())) {
                     PlayerAuthAttributes.removeRestrictions(player);
                     player.sendMessage(TextFormat.GREEN + FormAuth.getAuthConfig().getString("messages.login.success", "You have successfully logged in!"));
                 } else {
