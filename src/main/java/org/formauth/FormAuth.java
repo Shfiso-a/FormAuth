@@ -4,9 +4,11 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import org.formauth.form.LoginForm;
 import org.formauth.form.RegisterForm;
+import org.formauth.player.PasswordUtils;
 import org.formauth.player.SessionStorage;
 
 import java.io.File;
+import java.util.Map;
 
 public class FormAuth extends PluginBase {
     private static FormAuth instance;
@@ -44,10 +46,38 @@ public class FormAuth extends PluginBase {
         if (!new File(dbPath).exists()) {
             new Config(dbPath, Config.YAML).save();
         }
-
+        
+        migratePasswords(dbPath);
+        
         getServer().getPluginManager().registerEvents(new EventListener(), this);
         
         getLogger().info("FormAuth plugin has been enabled!");
+    }
+
+    /**
+     * migrate text
+     * 
+     * @param dbPath Path to database 
+     */
+    private void migratePasswords(String dbPath) {
+        Config playerDB = new Config(dbPath, Config.YAML);
+        boolean needsSave = false;
+        
+        for (String playerName : playerDB.getKeys(false)) {
+            String storedPassword = playerDB.getString(playerName + ".password");
+            
+            if (storedPassword != null && !storedPassword.contains(":")) {
+                String encryptedPassword = PasswordUtils.encryptPassword(storedPassword);
+                playerDB.set(playerName + ".password", encryptedPassword);
+                needsSave = true;
+                getLogger().info("Migrated password for player: " + playerName);
+            }
+        }
+        
+        if (needsSave) {
+            playerDB.save();
+            getLogger().info("Password migration completed successfully!");
+        }
     }
 
     @Override
