@@ -37,6 +37,20 @@ public class FormAuth extends PluginBase {
             config.set("messages.already.authenticated", "You are already authenticated.");
             config.set("messages.afk.kick", "You have been kicked for being AFK during authentication");
             config.set("messages.form.close.kick", "Authentication required");
+            // customazation 
+            config.set("form.login.title", "Login");
+            config.set("form.login.label", "Welcome back! Please enter your password to login:");
+            config.set("form.login.password.label", "Password");
+            config.set("form.login.password.placeholder", "Enter your password here");
+            config.set("form.register.title", "Register");
+            config.set("form.register.label", "Welcome! Please register to play on this server:");
+            config.set("form.register.password.label", "Password");
+            config.set("form.register.password.placeholder", "Enter your password here");
+            config.set("form.register.confirm.label", "Confirm Password");
+            config.set("form.register.confirm.placeholder", "Enter your password again");
+            // persian and arabic support 
+            config.set("persian.text.enabled", false);
+            
             config.save();
         }
 

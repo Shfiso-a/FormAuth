@@ -10,6 +10,7 @@ import cn.nukkit.utils.TextFormat;
 import org.formauth.FormAuth;
 import org.formauth.player.PlayerAuthAttributes;
 import org.formauth.player.PlayerData;
+import org.formauth.player.PersianTextUtils;
 
 public class RegisterForm {
     
@@ -21,13 +22,31 @@ public class RegisterForm {
      * @param player The player to show the form to
      */
     public static void showRegisterForm(Player player) {
-        FormWindowCustom form = new FormWindowCustom("Register");
+        boolean persianEnabled = FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false);
+        
+        String title = FormAuth.getAuthConfig().getString("form.register.title", "Register");
+        String label = FormAuth.getAuthConfig().getString("form.register.label", "Welcome! Please register to play on this server:");
+        String passwordLabel = FormAuth.getAuthConfig().getString("form.register.password.label", "Password");
+        String passwordPlaceholder = FormAuth.getAuthConfig().getString("form.register.password.placeholder", "Enter your password here");
+        String confirmLabel = FormAuth.getAuthConfig().getString("form.register.confirm.label", "Confirm Password");
+        String confirmPlaceholder = FormAuth.getAuthConfig().getString("form.register.confirm.placeholder", "Enter your password again");
 
-        form.addElement(new ElementLabel("Welcome! Please register to play on this server:"));
+        if (persianEnabled) {
+            title = PersianTextUtils.formatPersianText(title);
+            label = PersianTextUtils.formatPersianText(label);
+            passwordLabel = PersianTextUtils.formatPersianText(passwordLabel);
+            passwordPlaceholder = PersianTextUtils.formatPersianText(passwordPlaceholder);
+            confirmLabel = PersianTextUtils.formatPersianText(confirmLabel);
+            confirmPlaceholder = PersianTextUtils.formatPersianText(confirmPlaceholder);
+        }
         
-        form.addElement(new ElementInput("Password", "Enter your password here"));
+        FormWindowCustom form = new FormWindowCustom(title);
+
+        form.addElement(new ElementLabel(label));
         
-        form.addElement(new ElementInput("Confirm Password", "Enter your password again"));
+        form.addElement(new ElementInput(passwordLabel, passwordPlaceholder));
+        
+        form.addElement(new ElementInput(confirmLabel, confirmPlaceholder));
         
         player.showFormWindow(form, REGISTER_FORM_ID);
     }
@@ -44,18 +63,22 @@ public class RegisterForm {
         if (window instanceof FormWindowCustom) {
             FormWindowCustom form = (FormWindowCustom) window;
             
-            if (form.getTitle().equals("Register")) {
+            if (event.getFormID() == REGISTER_FORM_ID) {
                 String password = form.getResponse().getInputResponse(1);
                 String confirmPassword = form.getResponse().getInputResponse(2);
                 
                 if (password == null || password.isEmpty()) {
-                    player.sendMessage(TextFormat.RED + "Password cannot be empty!");
+                    String message = "Password cannot be empty!";
+                    FormAuth.getInstance().getLogger().info("Registration failed for " + player.getName() + ": Empty password");
+                    player.sendMessage(TextFormat.RED + message);
                     showRegisterForm(player);
                     return;
                 }
                 
                 if (!password.equals(confirmPassword)) {
-                    player.sendMessage(TextFormat.RED + "Passwords do not match! Please try again.");
+                    String message = "Passwords do not match! Please try again.";
+                    FormAuth.getInstance().getLogger().info("Registration failed for " + player.getName() + ": Passwords don't match");
+                    player.sendMessage(TextFormat.RED + message);
                     showRegisterForm(player);
                     return;
                 }
@@ -63,13 +86,19 @@ public class RegisterForm {
                 PlayerData playerData = FormAuth.getSessionStorage().getPlayerData(player);
                 
                 if (playerData.getStatus() == PlayerData.STATUS_SEARCH) {
-                    player.sendMessage(TextFormat.RED + "Your data has not been loaded yet... Please try again");
+                    String message = "Your data has not been loaded yet... Please try again";
+                    FormAuth.getInstance().getLogger().info("Registration failed for " + player.getName() + ": Data not loaded");
+                    player.sendMessage(TextFormat.RED + message);
                     showRegisterForm(player);
                     return;
                 }
                 
                 if (playerData.getStatus() != PlayerData.STATUS_NOT_REGISTERED) {
-                    player.sendMessage(TextFormat.RED + FormAuth.getAuthConfig().getString("messages.already.registered", "You are already registered."));
+                    String message = FormAuth.getAuthConfig().getString("messages.already.registered", "You are already registered.");
+                    if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                        message = PersianTextUtils.formatPersianText(message);
+                    }
+                    player.sendMessage(TextFormat.RED + message);
                     LoginForm.showLoginForm(player);
                     return;
                 }
@@ -78,7 +107,11 @@ public class RegisterForm {
                 
                 PlayerAuthAttributes.removeRestrictions(player);
                 
-                player.sendMessage(TextFormat.GREEN + FormAuth.getAuthConfig().getString("messages.register.success", "You have successfully registered!"));
+                String message = FormAuth.getAuthConfig().getString("messages.register.success", "You have successfully registered!");
+                if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                    message = PersianTextUtils.formatPersianText(message);
+                }
+                player.sendMessage(TextFormat.GREEN + message);
             }
         }
     }

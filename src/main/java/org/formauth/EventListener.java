@@ -2,6 +2,7 @@ package org.formauth;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerMoveEvent;
@@ -59,7 +60,7 @@ public class EventListener implements Listener {
     }
     
     /**
-     * Start AFK timeout timer for a player
+     * start AFK timeout timer for player
      */
     private void startAfkTimer(Player player) {
         if (afkTimeoutTasks.containsKey(player)) {
@@ -86,10 +87,23 @@ public class EventListener implements Listener {
     }
     
     /**
-     * Update player's last activity time
+     * Update player last activity time
      */
     private void updatePlayerActivity(Player player) {
         lastActivityTime.put(player, System.currentTimeMillis());
+    }
+    
+    /**
+     * prevent damage before login or register
+     */
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (!PlayerAuthAttributes.isAuthenticated(player)) {
+                event.setCancelled(true);
+            }
+        }
     }
     
     @EventHandler
@@ -151,15 +165,18 @@ public class EventListener implements Listener {
     public void onFormResponse(PlayerFormRespondedEvent event) {
         Player player = event.getPlayer();
         FormWindow window = event.getWindow();
+        int formId = event.getFormID();
         
         updatePlayerActivity(player);
+        
+        FormAuth.getInstance().getLogger().info("Form response from " + player.getName() + ", FormID: " + formId);
         
         boolean isAuthForm = false;
         String title = "";
         
         if (window instanceof FormWindowCustom) {
             title = ((FormWindowCustom) window).getTitle();
-            isAuthForm = title.equals("Login") || title.equals("Register");
+            isAuthForm = formId == 1 || formId == 2 || title.equals("Login") || title.equals("Register");
         } else if (window instanceof FormWindowSimple) {
             title = ((FormWindowSimple) window).getTitle();
             isAuthForm = title.contains("Login") || title.contains("Register");
@@ -188,23 +205,14 @@ public class EventListener implements Listener {
             return;
         }
         
-        if (window instanceof FormWindowSimple) {
-            FormResponseSimple response = (FormResponseSimple) window.getResponse();
-            String windowTitle = ((FormWindowSimple) window).getTitle();
-            
-            if (windowTitle.contains("Login")) {
-                LoginForm.processResponse(player, event);
-            } else if (windowTitle.contains("Register")) {
-                RegisterForm.processResponse(player, event);
-            }
-        } else if (window instanceof FormWindowCustom) {
-            String windowTitle = ((FormWindowCustom) window).getTitle();
-            
-            if (windowTitle.equals("Login")) {
-                LoginForm.processResponse(player, event);
-            } else if (windowTitle.equals("Register")) {
-                RegisterForm.processResponse(player, event);
-            }
+        FormAuth.getInstance().getLogger().info("Processing form with title: " + title + ", FormID: " + formId);
+        
+        if (formId == 1 || (window instanceof FormWindowCustom && title.contains("Login"))) {
+            FormAuth.getInstance().getLogger().info("Processing login form response");
+            LoginForm.processResponse(player, event);
+        } else if (formId == 2 || (window instanceof FormWindowCustom && title.contains("Register"))) {
+            FormAuth.getInstance().getLogger().info("Processing registration form response");
+            RegisterForm.processResponse(player, event);
         }
     }
 } 

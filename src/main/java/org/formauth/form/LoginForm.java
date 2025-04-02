@@ -13,6 +13,7 @@ import org.formauth.FormAuth;
 import org.formauth.player.PlayerAuthAttributes;
 import org.formauth.player.PlayerData;
 import org.formauth.player.PasswordUtils;
+import org.formauth.player.PersianTextUtils;
 
 public class LoginForm {
     
@@ -24,12 +25,25 @@ public class LoginForm {
      * @param player The player to show the form to
      */
     public static void showLoginForm(Player player) {
+        boolean persianEnabled = FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false);
         
-        FormWindowCustom form = new FormWindowCustom("Login");
+        String title = FormAuth.getAuthConfig().getString("form.login.title", "Login");
+        String label = FormAuth.getAuthConfig().getString("form.login.label", "Welcome back! Please enter your password to login:");
+        String passwordLabel = FormAuth.getAuthConfig().getString("form.login.password.label", "Password");
+        String passwordPlaceholder = FormAuth.getAuthConfig().getString("form.login.password.placeholder", "Enter your password here");
+
+        if (persianEnabled) {
+            title = PersianTextUtils.formatPersianText(title);
+            label = PersianTextUtils.formatPersianText(label);
+            passwordLabel = PersianTextUtils.formatPersianText(passwordLabel);
+            passwordPlaceholder = PersianTextUtils.formatPersianText(passwordPlaceholder);
+        }
         
-        form.addElement(new ElementLabel("Welcome back! Please enter your password to login:"));
+        FormWindowCustom form = new FormWindowCustom(title);
         
-        form.addElement(new ElementInput("Password", "Enter your password here"));
+        form.addElement(new ElementLabel(label));
+        
+        form.addElement(new ElementInput(passwordLabel, passwordPlaceholder));
         
         player.showFormWindow(form, PASSWORD_FORM_ID);
     }
@@ -46,11 +60,13 @@ public class LoginForm {
         if (window instanceof FormWindowCustom) {
             FormWindowCustom form = (FormWindowCustom) window;
             
-            if (form.getTitle().equals("Login")) {
+            if (event.getFormID() == PASSWORD_FORM_ID) {
                 String password = form.getResponse().getInputResponse(1);
                 
                 if (password == null || password.isEmpty()) {
-                    player.sendMessage(TextFormat.RED + "Password cannot be empty!");
+                    String message = "Password cannot be empty!";
+                    FormAuth.getInstance().getLogger().info("Login failed for " + player.getName() + ": Empty password");
+                    player.sendMessage(TextFormat.RED + message);
                     showLoginForm(player);
                     return;
                 }
@@ -58,27 +74,45 @@ public class LoginForm {
                 PlayerData playerData = FormAuth.getSessionStorage().getPlayerData(player);
                 
                 if (playerData.getStatus() == PlayerData.STATUS_SEARCH) {
-                    player.sendMessage(TextFormat.RED + "Your data has not been loaded yet... Please try again");
+                    String message = "Your data has not been loaded yet... Please try again";
+                    FormAuth.getInstance().getLogger().info("Login failed for " + player.getName() + ": Data not loaded");
+                    player.sendMessage(TextFormat.RED + message);
                     showLoginForm(player);
                     return;
                 }
                 
                 if (playerData.getStatus() == PlayerData.STATUS_NOT_REGISTERED) {
-                    player.sendMessage(TextFormat.RED + FormAuth.getAuthConfig().getString("messages.not.registered", "You are not registered. Please register first."));
+                    String message = FormAuth.getAuthConfig().getString("messages.not.registered", "You are not registered. Please register first.");
+                    if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                        message = PersianTextUtils.formatPersianText(message);
+                    }
+                    player.sendMessage(TextFormat.RED + message);
                     RegisterForm.showRegisterForm(player);
                     return;
                 }
                 
                 if (playerData.getStatus() == PlayerData.STATUS_AUTHENTICATED) {
-                    player.sendMessage(TextFormat.RED + FormAuth.getAuthConfig().getString("messages.already.authenticated", "You are already authenticated."));
+                    String message = FormAuth.getAuthConfig().getString("messages.already.authenticated", "You are already authenticated.");
+                    if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                        message = PersianTextUtils.formatPersianText(message);
+                    }
+                    player.sendMessage(TextFormat.RED + message);
                     return;
                 }
                 
                 if (PasswordUtils.verifyPassword(password, playerData.getPassword())) {
                     PlayerAuthAttributes.removeRestrictions(player);
-                    player.sendMessage(TextFormat.GREEN + FormAuth.getAuthConfig().getString("messages.login.success", "You have successfully logged in!"));
+                    String message = FormAuth.getAuthConfig().getString("messages.login.success", "You have successfully logged in!");
+                    if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                        message = PersianTextUtils.formatPersianText(message);
+                    }
+                    player.sendMessage(TextFormat.GREEN + message);
                 } else {
-                    player.sendMessage(TextFormat.RED + FormAuth.getAuthConfig().getString("messages.login.error", "Invalid password. Please try again."));
+                    String message = FormAuth.getAuthConfig().getString("messages.login.error", "Invalid password. Please try again.");
+                    if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                        message = PersianTextUtils.formatPersianText(message);
+                    }
+                    player.sendMessage(TextFormat.RED + message);
                     showLoginForm(player);
                 }
             }
