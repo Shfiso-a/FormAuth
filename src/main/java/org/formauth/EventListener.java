@@ -169,7 +169,7 @@ public class EventListener implements Listener {
         
         updatePlayerActivity(player);
         
-        FormAuth.getInstance().getLogger().info("Form response from " + player.getName() + ", FormID: " + formId);
+        // FormAuth.getInstance().getLogger().info("Form response from " + player.getName() + ", FormID: " + formId);
         
         boolean isAuthForm = false;
         String title = "";
@@ -205,13 +205,13 @@ public class EventListener implements Listener {
             return;
         }
         
-        FormAuth.getInstance().getLogger().info("Processing form with title: " + title + ", FormID: " + formId);
+        // FormAuth.getInstance().getLogger().info("Processing form with title: " + title + ", FormID: " + formId);
         
         if (formId == 1 || (window instanceof FormWindowCustom && title.contains("Login"))) {
-            FormAuth.getInstance().getLogger().info("Processing login form response");
+            // FormAuth.getInstance().getLogger().info("Processing login form response");
             LoginForm.processResponse(player, event);
         } else if (formId == 2 || (window instanceof FormWindowCustom && title.contains("Register"))) {
-            FormAuth.getInstance().getLogger().info("Processing registration form response");
+            // FormAuth.getInstance().getLogger().info("Processing registration form response");
             RegisterForm.processResponse(player, event);
         }
     }
