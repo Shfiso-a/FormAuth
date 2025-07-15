@@ -111,6 +111,7 @@ public class LoginForm {
                 }
                 
                 if (PasswordUtils.verifyPassword(password, playerData.getPassword())) {
+                    playerData.resetFailedLoginAttempts();
                     PlayerAuthAttributes.removeRestrictions(player);
                     String message = FormAuth.getAuthConfig().getString("messages.login.success", "You have successfully logged in!");
                     if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
@@ -118,6 +119,7 @@ public class LoginForm {
                     }
                     player.sendMessage(TextFormat.GREEN + message);
                 } else {
+                    playerData.incrementFailedLoginAttempts();
                     String message = FormAuth.getAuthConfig().getString("messages.login.error", "Invalid password. Please try again.");
                     if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
                         message = PersianTextUtils.formatPersianText(message);
