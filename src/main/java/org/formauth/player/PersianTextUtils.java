@@ -24,18 +24,14 @@ public class PersianTextUtils {
         try {
             char[] chars = text.toCharArray();
             List<String> arr = new ArrayList<>();
-            
-            // Check if text starts with farsi or arabic character
             if (chars.length > 0 && !isPersianChar(String.valueOf(chars[0]))) {
                 return text; 
             }
-            
-            // Reverse the character order ( for arabic and farsi) 
+
             for (int i = chars.length; i > 0; i--) {
                 arr.add(String.valueOf(chars[i - 1]));
             }
-            
-            // Apply farsi character formatting
+
             for (int num = 0; num < arr.size(); num++) {
                 if (num > 0 && !arr.get(num - 1).equals(" ")) {
                     arr.set(num, getFormattedChar(arr.get(num)));
