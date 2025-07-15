@@ -8,7 +8,7 @@
      </properties>
     <groupId>org.formauth</groupId>
     <artifactId>FormAuth</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <build>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <plugins>
