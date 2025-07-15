@@ -71,7 +71,17 @@ public class LoginForm {
                     return;
                 }
                 
-                PlayerData playerData = FormAuth.getSessionStorage().getPlayerData(player);
+                PlayerData playerData = FormAuth.getSessionStorage().getPlayerData(player); 
+                
+                int maxAttempts = FormAuth.getAuthConfig().getInt("login.max_attempts", 5);
+                if (playerData.getFailedLoginAttempts() >= maxAttempts) {
+                    String message = "Too many failed login attempts. Please try again later.";
+                    if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
+                        message = PersianTextUtils.formatPersianText(message);
+                    }
+                    player.kick(message);
+                    return;
+                }
                 
                 if (playerData.getStatus() == PlayerData.STATUS_SEARCH) {
                     String message = "Your data has not been loaded yet... Please try again";
