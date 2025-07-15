@@ -68,7 +68,7 @@ public class FormAuth extends PluginBase {
         
         getServer().getPluginManager().registerEvents(new EventListener(), this);
         
-        getLogger().info("FormAuth plugin has been enabled!");
+        getLogger().info("Enabled");
     }
 
     /**
