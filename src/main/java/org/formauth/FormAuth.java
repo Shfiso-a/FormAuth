@@ -50,6 +50,9 @@ public class FormAuth extends PluginBase {
             config.set("form.register.confirm.placeholder", "Enter your password again");
             // persian and arabic support 
             config.set("persian.text.enabled", false);
+            // login attempt limiter
+            config.set("login.max_attempts", 5);
+            config.set("messages.login.too_many_attempts", "Too many failed login attempts. Please try again later.");
             
             config.save();
         }
