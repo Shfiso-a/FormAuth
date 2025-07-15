@@ -12,11 +12,13 @@ public class PlayerData {
     private Player player;
     private int status;
     private String password;
+    private int failedLoginAttempts;
     
     public PlayerData(Player player) {
         this.player = player;
         this.status = STATUS_SEARCH;
         this.password = "";
+        this.failedLoginAttempts = 0;
     }
     
     public Player getPlayer() {
@@ -37,5 +39,20 @@ public class PlayerData {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public void incrementFailedLoginAttempts() {
+        this.failedLoginAttempts++;
+    }
+
+    public void resetFailedLoginAttempts() {
+        this.failedLoginAttempts = 0;
     }
 } 
