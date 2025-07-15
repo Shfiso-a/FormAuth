@@ -9,7 +9,7 @@ config file contains :
 - AFK timeout
 - Custom messages
 - Player database location
-- login attempt limiter
+- login attempt limiter ( without temporary block )
 
 ## Credits
 [KibiAuth](https://github.com/KibiDB/KibiAuth-Nukkit) (i only used it's code structure )
