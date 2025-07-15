@@ -39,6 +39,10 @@ public class SessionStorage {
     
     public void removePlayerData(Player player) {
         String playerName = player.getName().toLowerCase();
+        PlayerData data = sessions.get(playerName);
+        if (data != null) {
+            data.resetFailedLoginAttempts();
+        }
         sessions.remove(playerName);
     }
     
