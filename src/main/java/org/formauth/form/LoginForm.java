@@ -75,7 +75,7 @@ public class LoginForm {
                 
                 int maxAttempts = FormAuth.getAuthConfig().getInt("login.max_attempts", 5);
                 if (playerData.getFailedLoginAttempts() >= maxAttempts) {
-                    String message = "Too many failed login attempts. Please try again later.";
+                    String message = FormAuth.getAuthConfig().getString("messages.login.too_many_attempts", "Too many failed login attempts. Please try again later.");
                     if (FormAuth.getAuthConfig().getBoolean("persian.text.enabled", false)) {
                         message = PersianTextUtils.formatPersianText(message);
                     }
